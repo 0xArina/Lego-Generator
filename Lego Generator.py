@@ -68,13 +68,23 @@ cmds.setParent( '..' )
 
 #   UI: adjust and create a Rounded Block With Holes and Angle  #
 #################################################################
+#function for syncing UI 
+def checkBend60deg(isOn):
+    if(isOn):
+      # disable adjusting length feauture for bend at 60 deg (had little time left)
+      bendLength = cmds.intSliderGrp('roundedBlockWithHolesAngleBendLength', edit=True, en=False)
+      length = cmds.intSliderGrp('roundedBlockWithHolesAngleLength', edit=True, en=False)
+    else:
+        bendLength = cmds.intSliderGrp('roundedBlockWithHolesAngleBendLength', edit=True, en=True)
+        length = cmds.intSliderGrp('roundedBlockWithHolesAngleLength', edit=True, en=True)
+
 cmds.frameLayout(collapsable=True, label="Rounded Block with Holes and Angle")
 
 cmds.columnLayout()
 
 cmds.intSliderGrp('roundedBlockWithHolesAngleLength', l="Base Part Length", f=True, min=1, max=20, value=4)
 cmds.intSliderGrp('roundedBlockWithHolesAngleBendLength', l="Bended Part Length", f=True, min=2, max=20, value=3)
-cmds.radioButtonGrp('roundedBlockWithHolesBendAngle', label="Bend Angle", labelArray2=["90 deg", "135 deg"], numberOfRadioButtons=2, sl=1)
+cmds.radioButtonGrp('roundedBlockWithHolesBendAngle', label="Bend Angle", labelArray2=["90 deg", "60 deg"], numberOfRadioButtons=2, sl=1,cc2=checkBend60deg)
 #cmds.radioButton( label='roundedBlockWithHolesBendAngle90', label="Bend at 90 degrees")
 #cmds.radioButton( label='roundedBlockWithHolesBendAngle135', label="Bend at 135 degrees")
 cmds.colorSliderGrp('roundedBlockWithHolesAngleColour', label="Colour", hsv=(120, 1, 1))
@@ -304,9 +314,13 @@ def roundedBlockWithHolesAngle():
     # set up block dimensions
     height = 3
     width = 1 #bump
-    length = cmds.intSliderGrp('roundedBlockWithHolesAngleLength', q=True, v=True)
-    bendLength = cmds.intSliderGrp('roundedBlockWithHolesAngleBendLength', q=True, v=True)
     bendAngle = cmds.radioButtonGrp('roundedBlockWithHolesBendAngle', q=True, sl=True)
+    if(bendAngle == 1):
+        length = cmds.intSliderGrp('roundedBlockWithHolesAngleLength', q=True, v=True)
+        bendLength = cmds.intSliderGrp('roundedBlockWithHolesAngleBendLength', q=True, v=True)
+    if(bendAngle == 2):
+        length = 4
+        bendLength = 3
     rgb = cmds.colorSliderGrp('roundedBlockWithHolesAngleColour', q=True, rgbValue=True)
     
     # name
@@ -380,55 +394,107 @@ def roundedBlockWithHolesAngle():
     cmds.move(((length * 0.8) - (cubeSizeZ/2.0)), moveZ=True, a=True)
     cube = cmds.polyCBoolOp(cube, lHole, op=2, caching=False, ch=False)
     
-    # create a second cube for bend
-    cubeBend = cmds.polyCube(h=cubeSizeY, w=cubeSizeX, d=bendSizeZ)
-    cmds.rotate(90, rotateX=True, a=True)
-    
-    # move it up 
-    cmds.move((bendSizeZ/2.0), moveY=True)
-    
-    # add cylinder to its end
-    endCylind = cmds.polyCylinder(r=cubeSizeY*0.5, h=cubeSizeX)
-    cmds.rotate(90, rotateX=True, a=True)
-    cmds.rotate(90, rotateY=True, a=True)
-    cmds.move((bendSizeZ), moveY=True, a=True)    
-     
-    # merge cube with cylinder 
-    cubeBend = cmds.polyCBoolOp(cubeBend, endCylind, op=1, caching=False, ch=False)
-    
-    # move bended cube to cube's end
-    cmds.move((-cubeSizeZ/2), moveZ=True, a=True)
-    
-    # move it up a bit
-    cmds.move(0.5, moveY=True)
-    
-    # add holes to bended part
-    # create holes
-    for i in range(width):
-        for j in range(bendLength):
-            # create cylinder in the place of a hole
-            bHole = cmds.polyCylinder(r=0.25, h=height/2.0)        
-            # rotate and position it
-            cmds.rotate(90, rotateX=True, a=True)
-            cmds.rotate(90, rotateY=True, a=True)
-            cmds.move((cubeSizeY/2.0), moveY=True, a=True)
-            cmds.move(((0 * 0.8) - (cubeSizeZ/2.0)), moveZ=True, a=True)
-            cmds.move(((0 * 0.8) - (cubeSizeX/2.0) + 0.4), moveX=True, a=True) 
-            cmds.move(((j * 0.8) + (cubeSizeY/2.0)), moveY=True, a=True)
-            # remove it from the base block
-            cubeBend = cmds.polyCBoolOp(cubeBend, bHole, op=2, caching=False, ch=False)     
-    
-    # create the last hole
-    endHole = cmds.polyCylinder(r=0.25, h=height/2.0)
-    # rotate and position it
-    cmds.rotate(90, rotateX=True, a=True)
-    cmds.rotate(90, rotateY=True, a=True)
-    cmds.move((cubeSizeY/2.0), moveY=True, a=True)
-    cmds.move(((0 * 0.8) - (cubeSizeZ/2.0)), moveZ=True, a=True)
-    cmds.move((((bendLength) * 0.8) + (cubeSizeY/2.0)), moveY=True, a=True)
-    # remove it from end cylinder
-    cubeBend = cmds.polyCBoolOp(cubeBend, endHole, op=2, caching=False, ch=False) 
+    # create a second cube for bend 
+    if(bendAngle == 1): # at 90 degrees
+        cubeBend = cmds.polyCube(h=cubeSizeY, w=cubeSizeX, d=bendSizeZ)
+        cmds.rotate(90, rotateX=True, a=True)
         
+        # move it up 
+        cmds.move((bendSizeZ/2.0), moveY=True)
+        
+        # add cylinder to its end
+        endCylind = cmds.polyCylinder(r=cubeSizeY*0.5, h=cubeSizeX)
+        cmds.rotate(90, rotateX=True, a=True)
+        cmds.rotate(90, rotateY=True, a=True)
+        cmds.move((bendSizeZ), moveY=True, a=True)    
+         
+        # merge cube with cylinder 
+        cubeBend = cmds.polyCBoolOp(cubeBend, endCylind, op=1, caching=False, ch=False)
+        
+        # move bended cube to cube's end
+        cmds.move((-cubeSizeZ/2), moveZ=True, a=True)
+        
+        # move it up a bit
+        cmds.move(0.5, moveY=True)
+        
+        # add holes to bended part
+        # create holes
+        for i in range(width):
+            for j in range(bendLength):
+                # create cylinder in the place of a hole
+                bHole = cmds.polyCylinder(r=0.25, h=height/2.0)        
+                # rotate and position it
+                cmds.rotate(90, rotateX=True, a=True)
+                cmds.rotate(90, rotateY=True, a=True)
+                cmds.move((cubeSizeY/2.0), moveY=True, a=True)
+                cmds.move(((0 * 0.8) - (cubeSizeZ/2.0)), moveZ=True, a=True)
+                cmds.move(((0 * 0.8) - (cubeSizeX/2.0) + 0.4), moveX=True, a=True) 
+                cmds.move(((j * 0.8) + (cubeSizeY/2.0)), moveY=True, a=True)
+                # remove it from the base block
+                cubeBend = cmds.polyCBoolOp(cubeBend, bHole, op=2, caching=False, ch=False)     
+        
+        # create the last hole
+        endHole = cmds.polyCylinder(r=0.25, h=height/2.0)
+        # rotate and position it
+        cmds.rotate(90, rotateX=True, a=True)
+        cmds.rotate(90, rotateY=True, a=True)
+        cmds.move((cubeSizeY/2.0), moveY=True, a=True)
+        cmds.move(((0 * 0.8) - (cubeSizeZ/2.0)), moveZ=True, a=True)
+        cmds.move((((bendLength) * 0.8) + (cubeSizeY/2.0)), moveY=True, a=True)
+        # remove it from end cylinder
+        cubeBend = cmds.polyCBoolOp(cubeBend, endHole, op=2, caching=False, ch=False) 
+        
+    if(bendAngle == 2):    # bend at 60 degrees
+        # create a cube for bend
+        cubeBend = cmds.polyCube(h=cubeSizeY, w=cubeSizeX, d=bendSizeZ)
+        # move & rotate
+        cmds.move((cubeSizeY), moveY=True)
+        cmds.rotate(60, rotateX=True, a=True)
+        cmds.move(( 0 -(cubeSizeZ/2.0) + 1.04), moveZ=True, a=True)   
+            
+        # add cylinder to its end
+        endCylind = cmds.polyCylinder(r=cubeSizeY*0.5+0.01, h=cubeSizeX)
+        cmds.rotate(90, rotateX=True, a=True)
+        cmds.rotate(90, rotateY=True, a=True)
+        cmds.move((bendSizeZ - 0.4), moveY=True, a=True) 
+        cmds.move((-bendSizeZ/2 + 0.04), moveZ=True, a=True)    
+         
+        # merge cube with cylinder 
+        cubeBend = cmds.polyCBoolOp(cubeBend, endCylind, op=1, caching=False, ch=False)
+        
+        # move bended cube to cube's end
+        cmds.move((-cubeSizeZ/2), moveZ=True, a=True)
+        
+        # move it up a bit
+        cmds.move(0.5, moveY=True)
+        
+        # add holes to bended part
+        # create holes
+        for i in range(width):
+            for j in range(bendLength):
+                # create cylinder in the place of a hole
+                bHole = cmds.polyCylinder(r=0.25, h=height/2.0)        
+                # rotate and position it
+                cmds.rotate(90, rotateX=True, a=True)
+                cmds.rotate(90, rotateY=True, a=True)
+                cmds.move((cubeSizeY/2.0), moveY=True, a=True)
+                cmds.move(((0 * 0.8) - (cubeSizeZ/2.0)), moveZ=True, a=True)
+                cmds.move(((0 * 0.8) - (cubeSizeX/2.0) + 0.4), moveX=True, a=True) 
+                cmds.move(((j * 0.8) + (cubeSizeY/2.0)), moveY=True, a=True)
+                # remove it from the base block
+                cubeBend = cmds.polyCBoolOp(cubeBend, bHole, op=2, caching=False, ch=False)     
+        
+        # create the last hole
+        endHole = cmds.polyCylinder(r=0.25, h=height/2.0)
+        # rotate and position it
+        cmds.rotate(90, rotateX=True, a=True)
+        cmds.rotate(90, rotateY=True, a=True)
+        cmds.move((cubeSizeY/2.0), moveY=True, a=True)
+        cmds.move(((0 * 0.8) - (cubeSizeZ/2.0)), moveZ=True, a=True)
+        cmds.move((((bendLength) * 0.8) + (cubeSizeY/2.0)), moveY=True, a=True)
+        # remove it from end cylinder
+        cubeBend = cmds.polyCBoolOp(cubeBend, endHole, op=2, caching=False, ch=False)    
+       
     # add material       
     myShader = cmds.shadingNode('lambert', asShader=True, name="blckMat")
     cmds.setAttr(nsTmp+":blckMat.color",rgb[0],rgb[1],rgb[2], type='double3')
