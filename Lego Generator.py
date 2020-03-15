@@ -333,7 +333,7 @@ def roundedBlockWithHolesAngle():
         for j in range(length):
             # create cylinder in the place of a hole
             hole = cmds.polyCylinder(r=0.25, h=height/2.0)
-            
+    
             # rotate and position it
             cmds.rotate(90, rotateX=True, a=True)
             cmds.rotate(90, rotateY=True, a=True)
@@ -391,8 +391,8 @@ def roundedBlockWithHolesAngle():
     endCylind = cmds.polyCylinder(r=cubeSizeY*0.5, h=cubeSizeX)
     cmds.rotate(90, rotateX=True, a=True)
     cmds.rotate(90, rotateY=True, a=True)
-    cmds.move((bendSizeZ), moveY=True, a=True)
-    
+    cmds.move((bendSizeZ), moveY=True, a=True)    
+     
     # merge cube with cylinder 
     cubeBend = cmds.polyCBoolOp(cubeBend, endCylind, op=1, caching=False, ch=False)
     
@@ -402,11 +402,33 @@ def roundedBlockWithHolesAngle():
     # move it up a bit
     cmds.move(0.5, moveY=True)
     
-    # merge them
-    #cube = cmds.polyCBoolOp(cube, cubeBend, op=1, caching=False, ch=False)
+    # add holes to bended part
+    # create holes
+    for i in range(width):
+        for j in range(bendLength):
+            # create cylinder in the place of a hole
+            bHole = cmds.polyCylinder(r=0.25, h=height/2.0)        
+            # rotate and position it
+            cmds.rotate(90, rotateX=True, a=True)
+            cmds.rotate(90, rotateY=True, a=True)
+            cmds.move((cubeSizeY/2.0), moveY=True, a=True)
+            cmds.move(((0 * 0.8) - (cubeSizeZ/2.0)), moveZ=True, a=True)
+            cmds.move(((0 * 0.8) - (cubeSizeX/2.0) + 0.4), moveX=True, a=True) 
+            cmds.move(((j * 0.8) + (cubeSizeY/2.0)), moveY=True, a=True)
+            # remove it from the base block
+            cubeBend = cmds.polyCBoolOp(cubeBend, bHole, op=2, caching=False, ch=False)     
     
-    # add holes to vertucal bend cube first
-      
+    # create the last hole
+    endHole = cmds.polyCylinder(r=0.25, h=height/2.0)
+    # rotate and position it
+    cmds.rotate(90, rotateX=True, a=True)
+    cmds.rotate(90, rotateY=True, a=True)
+    cmds.move((cubeSizeY/2.0), moveY=True, a=True)
+    cmds.move(((0 * 0.8) - (cubeSizeZ/2.0)), moveZ=True, a=True)
+    cmds.move((((bendLength) * 0.8) + (cubeSizeY/2.0)), moveY=True, a=True)
+    # remove it from end cylinder
+    cubeBend = cmds.polyCBoolOp(cubeBend, endHole, op=2, caching=False, ch=False) 
+        
     # add material       
     myShader = cmds.shadingNode('lambert', asShader=True, name="blckMat")
     cmds.setAttr(nsTmp+":blckMat.color",rgb[0],rgb[1],rgb[2], type='double3')
