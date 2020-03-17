@@ -444,7 +444,7 @@ def roundedBlockWithHolesAngle():
         # remove it from end cylinder
         cubeBend = cmds.polyCBoolOp(cubeBend, endHole, op=2, caching=False, ch=False) 
         
-    if(bendAngle == 2):    # bend at 60 degrees # Create hole first and then rotate
+    if(bendAngle == 2):    # bend at 60 degrees 
         # create a cube for bend
         cubeBend = cmds.polyCube(h=cubeSizeY, w=cubeSizeX, d=bendSizeZ)
         # move & rotate
@@ -469,8 +469,8 @@ def roundedBlockWithHolesAngle():
         cmds.move(0.5, moveY=True)
         
         # add holes to bended part
-        # create holes ( doing it mannualy because had no energy to rewrite the code
-        #                to create the holes first and then rotate finished piece) 
+        # create holes ( doing it mannualy because did not rewrite the code to 
+        #                create the holes first and then rotate finished piece) 
         # HOLE ONE (from bottom)
         hole1 = cmds.polyCylinder(r=0.25, h=height/2.0)        
         # rotate and position it
@@ -521,3 +521,9 @@ def roundedBlockWithHolesAngle():
     
     cmds.hyperShade(assign=(nsTmp+":blckMat"))  
     cmds.namespace(removeNamespace=":"+nsTmp,mergeNamespaceWithParent=True)
+    
+#################################################################
+#                       Wheel and Hub                           #
+#################################################################
+def createWheel():
+    
