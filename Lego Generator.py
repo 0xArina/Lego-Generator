@@ -68,7 +68,7 @@ cmds.setParent( '..' )
 
 #   UI: adjust and create a Rounded Block With Holes and Angle  #
 #################################################################
-#function for syncing UI 
+#function for synching UI 
 def checkBend60deg(isOn):
     if(isOn):
       # disable adjusting length feauture for bend at 60 deg (had little time left)
@@ -93,6 +93,35 @@ cmds.columnLayout()
 cmds.button(label="Create Rounded Block With Holes and Angle", command=('roundedBlockWithHolesAngle()'))
 
 # Level Up in Hierarchy
+cmds.setParent( '..' )
+cmds.setParent( '..' )
+cmds.setParent( '..' )
+
+#              UI:  create a Wheels and Hubs                    #
+#################################################################
+cmds.frameLayout(collapsable=True, label="Wheels and Hubs")
+
+cmds.columnLayout()
+
+cmds.radioButtonGrp('wheelTire', label="Tire", labelArray2=["yes", "no"], numberOfRadioButtons=2, sl=1)
+cmds.radioButtonGrp('wheelHub', label="Hub", labelArray2=["yes", "no"], numberOfRadioButtons=2, sl=1)
+
+cmds.columnLayout()
+cmds.button(label="Create a Wheel", command=('createWheel()'))
+
+# Level Up in Hierarchy
+cmds.setParent( '..' )
+cmds.setParent( '..' )
+cmds.setParent( '..' )
+
+#                 UI:  create Gears and Racks                   #
+#################################################################
+cmds.frameLayout(collapsable=True, label="Gears and Racks")
+
+cmds.columnLayout()
+
+#cmds.radioButtonGrp('Gear', label="Tire", labelArray2=["yes", "no"], numberOfRadioButtons=2, sl=1)
+#cmds.button(label="Create a Gear", command=('createGear()'))
 
 # show UI window
 cmds.showWindow( myWin )
@@ -526,4 +555,22 @@ def roundedBlockWithHolesAngle():
 #                       Wheel and Hub                           #
 #################################################################
 def createWheel():
+    # query wheel size from UI
+    createTire = cmds.radioButtonGrp('wheelTire', q=True, sl=True)
+    createHub = cmds.radioButtonGrp('wheelHub', q=True, sl=True)
     
+    # create a tire 
+    if(createTire == 1):
+        # create cylinder
+        tire = cmds.polyCylinder(r=3.5, h=3.5, sx=36)
+        # create another cylinder for the hole
+        
+        # remove the hole
+  
+   # add colour    
+   #color( [objects] , [rgbColor=[float, float, float]], [userDefined=int])
+        
+#################################################################
+#                             Gears                             #  
+#################################################################   
+def createGear(): 
