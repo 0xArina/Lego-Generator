@@ -104,7 +104,9 @@ cmds.frameLayout(collapsable=True, label="Wheels and Hubs")
 cmds.columnLayout()
 
 cmds.radioButtonGrp('wheelTire', label="Tire", labelArray2=["yes", "no"], numberOfRadioButtons=2, sl=1)
+cmds.colorSliderGrp('tireColour', label="Tire's colour", hsv=(217, 0, 0.007))
 cmds.radioButtonGrp('wheelHub', label="Hub", labelArray2=["yes", "no"], numberOfRadioButtons=2, sl=1)
+cmds.colorSliderGrp('hubColour', label="Hub's colour", hsv=(360, 0, 0.5))
 
 cmds.columnLayout()
 cmds.button(label="Create a Wheel", command=('createWheel()'))
@@ -555,22 +557,69 @@ def roundedBlockWithHolesAngle():
 #                       Wheel and Hub                           #
 #################################################################
 def createWheel():
-    # query wheel size from UI
+    # query UI choice
     createTire = cmds.radioButtonGrp('wheelTire', q=True, sl=True)
     createHub = cmds.radioButtonGrp('wheelHub', q=True, sl=True)
     
     # create a tire 
     if(createTire == 1):
-        # create cylinder
+        # name
+        nsTmp = "Tire" + str(rnd.randint(1000,9999))
+        cmds.select(clear=True)
+        cmds.namespace(add=nsTmp)
+        cmds.namespace(set=nsTmp)
+        # query colour from UI
+        rgb = cmds.colorSliderGrp('tireColour', q=True, rgbValue=True)
+        # create cylinder for the base
         tire = cmds.polyCylinder(r=3.5, h=3.5, sx=36)
+        # add a smaller sphere to round up the tire
+        tmp = cmds.polySphere(r=3.35, sy=15, sx=36)
+        cmds.scale(1.1, scaleY=True)
+        # remove non intersecting parts 
+        tire = cmds.polyCBoolOp(tire, tmp, op=3, ch=False)
+        # Add texture:
+        # create cylinder as the base for texture at 1 side  (#THIS CODE MIGHT BE USEFUL FOR RACKS)
+        texture1 = cmds.polyCylinder(r=2.8, h=1.75, sx=36)
+        # move it up 
+        cmds.move(1.75/2, moveY=True, a=True)
+        # in range of subdivisions 
+        for i in range(35):
+             #for all even numbers
+             if(i % 2 == 0):
+                 cmds.select(texture1[0] + ".f[" + str(i) + "]")
+                 # local translate on Z and scale x 
+                 cmds.polyExtrudeFacet(ltz=1, lsx=1.35)
+        # duplicate texture 1 for the 2nd side
+        texture2 = cmds.duplicate(texture1)
+        cmds.select(texture2)
+        cmds.move(-1.75/2, moveY=True, a=True) 
+        cmds.rotate(10, rotateY=True, a=True)
+        # combine textures 1 and 2
+        texture = cmds.polyCBoolOp(texture1, texture2, op=1, ch=False)
+        # add a smaller sphere to round up the texture
+        tmp = cmds.polySphere(r=3.7, sy=13, sx=36)
+        # remove non intersecting parts 
+        texture = cmds.polyCBoolOp(texture, tmp, op=3, ch=False)
+        cmds.polyMergeVertex(d=0.05, ch=False)
         # create another cylinder for the hole
+        tmp = cmds.polyCylinder(r=2, h=3.5)
+        # remove it
+        tire = cmds.polyCBoolOp(tire, tmp, op=2, ch=False)
+        tmp = cmds.polyCylinder(r=2, h=3.5)
+        texture = cmds.polyCBoolOp(texture, tmp, op=2, ch=False)
         
-        # remove the hole
-  
-   # add colour    
-   #color( [objects] , [rgbColor=[float, float, float]], [userDefined=int])
+        # add material       
+        myShader = cmds.shadingNode('lambert', asShader=True, name="blckMat")
+        cmds.setAttr(nsTmp+":blckMat.color",rgb[0],rgb[1],rgb[2], type='double3')
+        
+        cmds.polyUnite((nsTmp+":*"), n=nsTmp, ch=False)
+        cmds.delete(ch=True)
+        
+        cmds.hyperShade(assign=(nsTmp+":blckMat"))  
+        cmds.namespace(removeNamespace=":"+nsTmp,mergeNamespaceWithParent=True)
+
         
 #################################################################
 #                             Gears                             #  
 #################################################################   
-def createGear(): 
+#def createGear(): 
