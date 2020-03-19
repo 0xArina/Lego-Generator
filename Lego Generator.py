@@ -618,6 +618,15 @@ def createWheel():
         cmds.hyperShade(assign=(nsTmp+":blckMat"))  
         cmds.namespace(removeNamespace=":"+nsTmp,mergeNamespaceWithParent=True)
 
+    # create a hub
+    if (createHub == 1):
+        # name
+        nsTmp = "Hub" + str(rnd.randint(1000,9999))
+        cmds.select(clear=True)
+        cmds.namespace(add=nsTmp)
+        cmds.namespace(set=nsTmp)
+        # query colour from UI
+        rgb = cmds.colorSliderGrp('hubColour', q=True, rgbValue=True)
         
 #################################################################
 #                             Gears                             #  
