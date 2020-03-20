@@ -106,7 +106,7 @@ cmds.columnLayout()
 cmds.radioButtonGrp('wheelTire', label="Tire", labelArray2=["yes", "no"], numberOfRadioButtons=2, sl=1)
 cmds.colorSliderGrp('tireColour', label="Tire's colour", hsv=(217, 0, 0.007))
 cmds.radioButtonGrp('wheelHub', label="Hub", labelArray2=["yes", "no"], numberOfRadioButtons=2, sl=1)
-cmds.colorSliderGrp('hubColour', label="Hub's colour", hsv=(360, 0, 0.5))
+cmds.colorSliderGrp('hubColour', label="Hub's colour", hsv=(360, 0, 0.852))
 
 cmds.columnLayout()
 cmds.button(label="Create a Wheel", command=('createWheel()'))
@@ -627,6 +627,34 @@ def createWheel():
         cmds.namespace(set=nsTmp)
         # query colour from UI
         rgb = cmds.colorSliderGrp('hubColour', q=True, rgbValue=True)
+        
+        # base 
+        hub = cmds.polyCylinder(r=2.1, h=2.8)
+        # outline
+        tmp = cmds.polyCylinder(r=1.6, h=2.8)
+        hub = cmds.polyCBoolOp(hub, tmp, op=2, ch=False)
+        # inside
+        tmp = cmds.polyCylinder(r=1.6, h=1.8)
+        # decoration
+        d1 = cmds.polyCylinder(r=0.5, h=1.8)
+        d2 = cmds.polyCylinder(r=0.5, h=1.8)
+        cmd.move(-0.85, moveX=true, a=true)
+        d3
+        d4
+        d5
+        d6
+        d7
+        
+        # add material       
+        myShader = cmds.shadingNode('lambert', asShader=True, name="blckMat")
+        cmds.setAttr(nsTmp+":blckMat.color",rgb[0],rgb[1],rgb[2], type='double3')
+        
+        cmds.polyUnite((nsTmp+":*"), n=nsTmp, ch=False)
+        cmds.delete(ch=True)
+        
+        cmds.hyperShade(assign=(nsTmp+":blckMat"))  
+        cmds.namespace(removeNamespace=":"+nsTmp,mergeNamespaceWithParent=True)
+        
         
 #################################################################
 #                             Gears                             #  
