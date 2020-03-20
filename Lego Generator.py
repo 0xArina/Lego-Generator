@@ -634,16 +634,34 @@ def createWheel():
         tmp = cmds.polyCylinder(r=1.6, h=2.8)
         hub = cmds.polyCBoolOp(hub, tmp, op=2, ch=False)
         # inside
-        tmp = cmds.polyCylinder(r=1.6, h=1.8)
+        hubIn = cmds.polyCylinder(r=1.6, h=1.8)
         # decoration
-        d1 = cmds.polyCylinder(r=0.5, h=1.8)
-        d2 = cmds.polyCylinder(r=0.5, h=1.8)
-        cmd.move(-0.85, moveX=true, a=true)
-        d3
-        d4
-        d5
-        d6
-        d7
+        # center 
+        d1 = cmds.polyCylinder(r=0.3, h=1.8)
+        # circle around center of the hub
+        d2 = cmds.polyCylinder(r=0.3, h=1.8)  #decoration 
+        d2O = cmds.polyCylinder(r=0.4, h=1.9) #decoration outline
+        cmds.move(-0.85, moveX=True, a=True)
+        cmds.move(-0.03, moveZ=True, a=True)
+        hubIn = cmds.polyCBoolOp(hubIn, d2, op=2, ch=False)
+        d3 = cmds.polyCylinder(r=0.3, h=1.8)
+        d3O = cmds.polyCylinder(r=0.4, h=1.8) 
+        cmds.move(-0.422, moveX=True, a=True)
+        cmds.move(0.648, moveZ=True, a=True)
+        hubIn = cmds.polyCBoolOp(hubIn, d3, op=2, ch=False)
+        d4 = cmds.polyCylinder(r=0.3, h=1.8)
+        d4O = cmds.polyCylinder(r=0.4, h=1.8) 
+        cmds.move(0.416, moveX=True, a=True)
+        cmds.move(0.627, moveZ=True, a=True)
+        d5 = cmds.polyCylinder(r=0.3, h=1.8)
+        cmds.move(0.835, moveX=True, a=True)
+        cmds.move(-0.049, moveZ=True, a=True)
+        d6 = cmds.polyCylinder(r=0.3, h=1.8)
+        cmds.move(0.431, moveX=True, a=True)
+        cmds.move(-0.692, moveZ=True, a=True)
+        d7 = cmds.polyCylinder(r=0.3, h=1.8)
+        cmds.move(-0.384, moveX=True, a=True)
+        cmds.move(-0.734, moveZ=True, a=True)
         
         # add material       
         myShader = cmds.shadingNode('lambert', asShader=True, name="blckMat")
