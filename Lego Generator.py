@@ -122,8 +122,11 @@ cmds.frameLayout(collapsable=True, label="Gears and Racks")
 
 cmds.columnLayout()
 
-#cmds.radioButtonGrp('Gear', label="Tire", labelArray2=["yes", "no"], numberOfRadioButtons=2, sl=1)
-#cmds.button(label="Create a Gear", command=('createGear()'))
+cmds.colorSliderGrp('gearColour', label="Gear's colour", hsv=(240, 0.8, 0.852))
+cmds.button(label="Create a Gear", command=('createGear()'))
+
+cmds.colorSliderGrp('rackColour', label="Rack's colour", hsv=(360, 0.99, 0.99))
+cmds.button(label="Create a Rack", command=('createRack()'))
 
 # show UI window
 cmds.showWindow( myWin )
@@ -500,8 +503,7 @@ def roundedBlockWithHolesAngle():
         cmds.move(0.5, moveY=True)
         
         # add holes to bended part
-        # create holes ( doing it mannualy because did not rewrite the code to 
-        #                create the holes first and then rotate finished piece) 
+        # create holes  
         # HOLE ONE (from bottom)
         hole1 = cmds.polyCylinder(r=0.25, h=height/2.0)        
         # rotate and position it
@@ -611,8 +613,11 @@ def createWheel():
         # add material       
         myShader = cmds.shadingNode('lambert', asShader=True, name="blckMat")
         cmds.setAttr(nsTmp+":blckMat.color",rgb[0],rgb[1],rgb[2], type='double3')
-        
         cmds.polyUnite((nsTmp+":*"), n=nsTmp, ch=False)
+        cmds.rotate(90, rotateX=True, a=True)
+        cmds.rotate(90, rotateY=True, a=True)
+        cmds.move(3.466, moveY=True, a=True)
+        
         cmds.delete(ch=True)
         
         cmds.hyperShade(assign=(nsTmp+":blckMat"))  
@@ -650,10 +655,6 @@ def createWheel():
         cmds.move(-0.03, moveZ=True, a=True)
         hubIn = cmds.polyCBoolOp(hubIn, d1c, op=2, ch=False)
 
-        #d2 = cmds.polyCylinder(r=0.4, h=2.8) 
-        #cmds.move(-0.85, moveX=True, a=True)
-        #cmds.move(-0.03, moveZ=True, a=True)
-        
         d3 = cmds.polyCylinder(r=0.4, h=2.8) 
         cmds.move(-0.422, moveX=True, a=True)
         cmds.move(0.648, moveZ=True, a=True)
@@ -705,16 +706,76 @@ def createWheel():
         hubIn = cmds.polyCBoolOp(hubIn, d7c, op=2, ch=False)
         
         # add material       
-        #myShader = cmds.shadingNode('lambert', asShader=True, name="blckMat")
-        #cmds.setAttr(nsTmp+":blckMat.color",rgb[0],rgb[1],rgb[2], type='double3')
+        myShader = cmds.shadingNode('lambert', asShader=True, name="blckMat")
+        cmds.setAttr(nsTmp+":blckMat.color",rgb[0],rgb[1],rgb[2], type='double3')
         
-        #cmds.polyUnite((nsTmp+":*"), n=nsTmp, ch=False)
-        #cmds.delete(ch=True)
+        cmds.polyUnite((nsTmp+":*"), n=nsTmp, ch=False)
+        cmds.rotate(90, rotateX=True, a=True)
+        cmds.rotate(90, rotateY=True, a=True)
+        cmds.move(3.466, moveY=True, a=True)
+        cmds.delete(ch=True)
         
-        #cmds.hyperShade(assign=(nsTmp+":blckMat"))  
-        #cmds.namespace(removeNamespace=":"+nsTmp,mergeNamespaceWithParent=True)
+        cmds.hyperShade(assign=(nsTmp+":blckMat"))  
+        cmds.namespace(removeNamespace=":"+nsTmp,mergeNamespaceWithParent=True)
+        
               
 #################################################################
-#                             Gears                             #  
+#                             Gear                              #  
 #################################################################   
-#def createGear(): 
+def createGear(): 
+    teeth = 16
+    teethLength = 0.2
+    
+    # name
+    nsTmp = "Gear" + str(rnd.randint(1000,9999))
+    cmds.select(clear=True)
+    cmds.namespace(add=nsTmp)
+    cmds.namespace(set=nsTmp)
+    # query colour from UI
+    rgb = cmds.colorSliderGrp('gearColour', q=True, rgbValue=True)
+    
+    # base
+    gear = cmds.polyCylinder(r=0.7, h=0.4, sx=32) 
+    
+    # extrude teeth
+    for i in range(31):
+        if(i % 2 == 0):
+            cmds.select(gear[0] + ".f[" + str(i) + "]")
+            cmds.polyExtrudeFacet(ltz=0.1)
+            cmds.polyExtrudeFacet(ltz=0.1)
+            cmds.polyMoveFacet(lsx=0.5)
+    
+    # decor 
+    tmp = cmds.polyCylinder(r=0.6, h=0.2)
+    cmds.move(0.2, moveY=True, a=True)
+    gear = cmds.polyCBoolOp(gear, tmp, op=2, ch=False)
+    tmp = cmds.polyCylinder(r=0.6, h=0.2)
+    cmds.move(-0.2, moveY=True, a=True)
+    gear = cmds.polyCBoolOp(gear, tmp, op=2, ch=False)
+    # center 
+    cylind = cmds.polyCylinder(r=0.3, h=0.6)
+    #create x shape
+    x = cmds.polyCube(w=0.5, h=0.6, d=0.2)
+    tmp = cmds.polyCube(w=0.2, h=0.6, d=0.5)
+    #combine them
+    x = cmds.polyCBoolOp(x, tmp, op=1)
+    x2 = cmds.duplicate(x)
+    # remove from center
+    cylind = cmds.polyCBoolOp(cylind, x, op=2)
+    # remove from base 
+    gear = cmds.polyCBoolOp(gear, x2, op=2)
+    
+    # add material       
+    myShader = cmds.shadingNode('lambert', asShader=True, name="blckMat")
+    cmds.setAttr(nsTmp+":blckMat.color",rgb[0],rgb[1],rgb[2], type='double3')
+        
+    cmds.polyUnite((nsTmp+":*"), n=nsTmp, ch=False)
+    cmds.move(0.3, moveY=True, a=True)
+    cmds.delete(ch=True)
+        
+    cmds.hyperShade(assign=(nsTmp+":blckMat"))  
+    cmds.namespace(removeNamespace=":"+nsTmp,mergeNamespaceWithParent=True) 
+
+#################################################################
+#                             Rack                              #  
+#################################################################   
