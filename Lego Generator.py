@@ -633,47 +633,87 @@ def createWheel():
         # outline
         tmp = cmds.polyCylinder(r=1.6, h=2.8)
         hub = cmds.polyCBoolOp(hub, tmp, op=2, ch=False)
-        # inside
+        # inner part of the hub
         hubIn = cmds.polyCylinder(r=1.6, h=1.8)
-        # decoration
         # center 
-        d1 = cmds.polyCylinder(r=0.3, h=1.8)
-        # circle around center of the hub
-        d2 = cmds.polyCylinder(r=0.3, h=1.8)  #decoration 
-        d2O = cmds.polyCylinder(r=0.4, h=1.9) #decoration outline
+        hubCenter = cmds.polyCylinder(r=0.3, h=2.4)
+        hubIn = cmds.polyCBoolOp(hubIn, hubCenter, op=2, ch=False)
+        
+        # decor parts
+        d1 = cmds.polyCylinder(r=0.4, h=2.8)
         cmds.move(-0.85, moveX=True, a=True)
         cmds.move(-0.03, moveZ=True, a=True)
-        hubIn = cmds.polyCBoolOp(hubIn, d2, op=2, ch=False)
-        d3 = cmds.polyCylinder(r=0.3, h=1.8)
-        d3O = cmds.polyCylinder(r=0.4, h=1.8) 
+        hubIn = cmds.polyCBoolOp(hubIn, d1, op=1, ch=False)
+        # subtract smaller cylinder inside 
+        d1c = cmds.polyCylinder(r=0.3, h=2.9)
+        cmds.move(-0.85, moveX=True, a=True)
+        cmds.move(-0.03, moveZ=True, a=True)
+        hubIn = cmds.polyCBoolOp(hubIn, d1c, op=2, ch=False)
+
+        #d2 = cmds.polyCylinder(r=0.4, h=2.8) 
+        #cmds.move(-0.85, moveX=True, a=True)
+        #cmds.move(-0.03, moveZ=True, a=True)
+        
+        d3 = cmds.polyCylinder(r=0.4, h=2.8) 
         cmds.move(-0.422, moveX=True, a=True)
         cmds.move(0.648, moveZ=True, a=True)
-        hubIn = cmds.polyCBoolOp(hubIn, d3, op=2, ch=False)
-        d4 = cmds.polyCylinder(r=0.3, h=1.8)
-        d4O = cmds.polyCylinder(r=0.4, h=1.8) 
+        hubIn = cmds.polyCBoolOp(hubIn, d3, op=1, ch=False)
+        # subtract smaller cylinder inside 
+        d3c = cmds.polyCylinder(r=0.3, h=2.9)
+        cmds.move(-0.422, moveX=True, a=True)
+        cmds.move(0.648, moveZ=True, a=True)
+        hubIn = cmds.polyCBoolOp(hubIn, d3c, op=2, ch=False)
+
+        d4 = cmds.polyCylinder(r=0.4, h=2.8)
         cmds.move(0.416, moveX=True, a=True)
         cmds.move(0.627, moveZ=True, a=True)
-        d5 = cmds.polyCylinder(r=0.3, h=1.8)
+        hubIn = cmds.polyCBoolOp(hubIn, d4, op=1, ch=False)
+        # subtract smaller cylinder inside 
+        d4c = cmds.polyCylinder(r=0.3, h=2.9)
+        cmds.move(0.416, moveX=True, a=True)
+        cmds.move(0.627, moveZ=True, a=True)
+        hubIn = cmds.polyCBoolOp(hubIn, d4c, op=2, ch=False)
+        
+        d5 = cmds.polyCylinder(r=0.4, h=2.8)
         cmds.move(0.835, moveX=True, a=True)
         cmds.move(-0.049, moveZ=True, a=True)
-        d6 = cmds.polyCylinder(r=0.3, h=1.8)
+        hubIn = cmds.polyCBoolOp(hubIn, d5, op=1, ch=False)
+        # subtract smaller cylinder inside 
+        d5c = cmds.polyCylinder(r=0.3, h=2.9)
+        cmds.move(0.835, moveX=True, a=True)
+        cmds.move(-0.049, moveZ=True, a=True)
+        hubIn = cmds.polyCBoolOp(hubIn, d5c, op=2, ch=False)
+        
+        d6 = cmds.polyCylinder(r=0.4, h=2.8)
         cmds.move(0.431, moveX=True, a=True)
         cmds.move(-0.692, moveZ=True, a=True)
-        d7 = cmds.polyCylinder(r=0.3, h=1.8)
+        hubIn = cmds.polyCBoolOp(hubIn, d6, op=1, ch=False)
+        # subtract smaller cylinder inside 
+        d6c = cmds.polyCylinder(r=0.3, h=2.9)
+        cmds.move(0.431, moveX=True, a=True)
+        cmds.move(-0.692, moveZ=True, a=True)
+        hubIn = cmds.polyCBoolOp(hubIn, d6c, op=2, ch=False)
+        
+        d7 = cmds.polyCylinder(r=0.4, h=2.8)
         cmds.move(-0.384, moveX=True, a=True)
         cmds.move(-0.734, moveZ=True, a=True)
+        hubIn = cmds.polyCBoolOp(hubIn, d7, op=1, ch=False)
+        # subtract smaller cylinder inside 
+        d7c = cmds.polyCylinder(r=0.3, h=2.9)
+        cmds.move(-0.384, moveX=True, a=True)
+        cmds.move(-0.734, moveZ=True, a=True)
+        hubIn = cmds.polyCBoolOp(hubIn, d7c, op=2, ch=False)
         
         # add material       
-        myShader = cmds.shadingNode('lambert', asShader=True, name="blckMat")
-        cmds.setAttr(nsTmp+":blckMat.color",rgb[0],rgb[1],rgb[2], type='double3')
+        #myShader = cmds.shadingNode('lambert', asShader=True, name="blckMat")
+        #cmds.setAttr(nsTmp+":blckMat.color",rgb[0],rgb[1],rgb[2], type='double3')
         
-        cmds.polyUnite((nsTmp+":*"), n=nsTmp, ch=False)
-        cmds.delete(ch=True)
+        #cmds.polyUnite((nsTmp+":*"), n=nsTmp, ch=False)
+        #cmds.delete(ch=True)
         
-        cmds.hyperShade(assign=(nsTmp+":blckMat"))  
-        cmds.namespace(removeNamespace=":"+nsTmp,mergeNamespaceWithParent=True)
-        
-        
+        #cmds.hyperShade(assign=(nsTmp+":blckMat"))  
+        #cmds.namespace(removeNamespace=":"+nsTmp,mergeNamespaceWithParent=True)
+              
 #################################################################
 #                             Gears                             #  
 #################################################################   
