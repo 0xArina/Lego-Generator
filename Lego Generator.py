@@ -580,7 +580,7 @@ def createWheel():
         # remove non intersecting parts 
         tire = cmds.polyCBoolOp(tire, tmp, op=3, ch=False)
         # Add texture:
-        # create cylinder as the base for texture at 1 side  (#THIS CODE MIGHT BE USEFUL FOR RACKS)
+        # create cylinder as the base for texture at 1 side 
         texture1 = cmds.polyCylinder(r=2.8, h=1.75, sx=36)
         # move it up 
         cmds.move(1.75/2, moveY=True, a=True)
@@ -779,3 +779,40 @@ def createGear():
 #################################################################
 #                             Rack                              #  
 #################################################################   
+def createRack():
+    rgb = cmds.colorSliderGrp('rackColour', q=True, rgbValue=True)
+    
+    # name
+    nsTmp = "Rack" + str(rnd.randint(1000,9999))
+    
+    cmds.select(clear=True)
+    cmds.namespace(add=nsTmp)
+    cmds.namespace(set=nsTmp)
+    
+    # base
+    rack = cmds.polyCube(h=0.6, w=1.5, d=6, sz=24)
+    
+    # extrude teeth
+    for i in range(24):
+        if(i % 2 == 1):
+            cmds.select(rack[0] + ".f[" + str(i) + "]")
+            cmds.polyExtrudeFacet(ltz=0.3)
+            cmds.polyExtrudeFacet(ltz=0.3)
+            cmds.polyMoveFacet(lsx=0.1)
+            
+    tmp = cmds.polyCube(h=0.6, w=1.5, d=2)
+    cmds.move(-3.753, moveZ = True)
+    rack = cmds.polyCBoolOp(rack, tmp, op=2)
+    tmp = cmds.polyCube(h=0.6, w=1.5, d=2)
+            
+    # add material       
+    myShader = cmds.shadingNode('lambert', asShader=True, name="blckMat")
+    cmds.setAttr(nsTmp+":blckMat.color",rgb[0],rgb[1],rgb[2], type='double3')
+        
+    cmds.polyUnite((nsTmp+":*"), n=nsTmp, ch=False)
+    cmds.move(0.4, moveY=True, a=True)
+    cmds.delete(ch=True)
+        
+    cmds.hyperShade(assign=(nsTmp+":blckMat"))  
+    cmds.namespace(removeNamespace=":"+nsTmp,mergeNamespaceWithParent=True) 
+
