@@ -56,7 +56,7 @@ cmds.frameLayout(collapsable=True, label="Rounded Block with Holes")
 cmds.columnLayout()
 
 cmds.intSliderGrp('roundedBlockWithHolesLength', l="Length", f=True, min=1, max=20, value=8)
-cmds.colorSliderGrp('roundedBlockWithHolesColour', label="Colour", hsv=(120, 1, 1))
+cmds.colorSliderGrp('roundedBlockWithHolesColour', label="Colour", hsv=(11.5, 1, 1))
 
 cmds.columnLayout()
 cmds.button(label="Create Rounded Block With Holes", command=('roundedBlockWithHoles()'))
@@ -87,7 +87,7 @@ cmds.intSliderGrp('roundedBlockWithHolesAngleBendLength', l="Bended Part Length"
 cmds.radioButtonGrp('roundedBlockWithHolesBendAngle', label="Bend Angle", labelArray2=["90 deg", "60 deg"], numberOfRadioButtons=2, sl=1,cc2=checkBend60deg)
 #cmds.radioButton( label='roundedBlockWithHolesBendAngle90', label="Bend at 90 degrees")
 #cmds.radioButton( label='roundedBlockWithHolesBendAngle60', label="Bend at 60 degrees")
-cmds.colorSliderGrp('roundedBlockWithHolesAngleColour', label="Colour", hsv=(120, 1, 1))
+cmds.colorSliderGrp('roundedBlockWithHolesAngleColour', label="Colour", hsv=(120, 0, 0.4))
 
 cmds.columnLayout()
 cmds.button(label="Create Rounded Block With Holes and Angle", command=('roundedBlockWithHolesAngle()'))
